@@ -1,27 +1,25 @@
-const API_URL = "http://127.0.0.1:5000/notes";
+document.getElementById("save-btn").addEventListener("click", function() {
+    let noteText = document.getElementById("note-input").value;
+    if (noteText.trim() === "") return;
 
-async function fetchNotes() {
-    let res = await fetch(API_URL);
-    let notes = await res.json();
-    let list = document.getElementById("notesList");
+    let notes = JSON.parse(localStorage.getItem("notes")) || [];
+    notes.push(noteText);
+    localStorage.setItem("notes", JSON.stringify(notes));
+
+    document.getElementById("note-input").value = "";
+    displayNotes();
+});
+
+function displayNotes() {
+    let notes = JSON.parse(localStorage.getItem("notes")) || [];
+    let list = document.getElementById("notes-list");
     list.innerHTML = "";
     notes.forEach(note => {
         let li = document.createElement("li");
-        li.textContent = note[1];
+        li.textContent = note;
         list.appendChild(li);
     });
 }
 
-async function addNote() {
-    let noteContent = document.getElementById("noteInput").value;
-    if (!noteContent) return;
-    await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: noteContent })
-    });
-    document.getElementById("noteInput").value = "";
-    fetchNotes();
-}
-
-fetchNotes();
+// Display saved notes on page load
+displayNotes();
